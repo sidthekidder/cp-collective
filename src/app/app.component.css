@@ -5,9 +5,6 @@
   min-height: calc(100vh - 76px);
   position: relative;
 }
-.gray {
-  color: gray;
-}
 .footer-row {
   justify-content: space-between; 
   font-size: 22px;

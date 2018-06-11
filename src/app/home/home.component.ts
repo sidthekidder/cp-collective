@@ -2,7 +2,6 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DataService } from '../data.service';
-import { Constants } from '../constants';
 import { environment } from '../../environments/environment';
 
 

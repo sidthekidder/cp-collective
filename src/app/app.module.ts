@@ -5,11 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { DomainComponent } from './domain/domain.component';
+import { ColonyComponent } from './colony/colony.component';
 import { QuestionComponent } from './question/question.component';
 import { EvaluateComponent } from './evaluate/evaluate.component';
 import { ProfileComponent } from './profile/profile.component';
-import { Constants} from './constants';
+import { RegisterComponent } from './register/register.component';
 import { DataService } from './data.service';
 import { AppRoutingModule } from './app-routing.module';
 
@@ -19,10 +19,11 @@ import { AppRoutingModule } from './app-routing.module';
   declarations: [
     AppComponent,
     HomeComponent,
-    DomainComponent,
+    ColonyComponent,
     QuestionComponent,
     EvaluateComponent,
-    ProfileComponent
+    ProfileComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

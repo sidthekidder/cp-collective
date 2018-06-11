@@ -22,7 +22,11 @@ import { DataService } from '../data.service';
 })
 export class QuestionComponent implements OnInit, OnDestroy {
 
-  private subQid: any
+  colonyName: string
+  domainName: string
+
+  private subColony: any
+  private subDomain: any
 
   constructor(private dataService: DataService, private route: ActivatedRoute) { 
   }
@@ -30,8 +34,11 @@ export class QuestionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let that = this
     
-    this.subQid = this.route.data.subscribe(data => {
-
+    this.subColony = this.route.data.subscribe(data => {
+      this.colonyName = data.domain
+    })
+    this.subDomain = this.route.data.subscribe(data => {
+      this.domainName = data.qid
     })
 
     this.loadData()
@@ -39,9 +46,14 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
   loadData() {
     let that = this
+
+    this.dataService.connectToColony(this.colonyName).then(() => {
+
+    })
   }
 
   ngOnDestroy() {
-    this.subQid.unsubscribe()
+    this.subColony.unsubscribe()
+    this.subDomain.unsubscribe()
   }
 }

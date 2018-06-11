@@ -9,11 +9,14 @@
 		</a>
 
 		<ul class="navbar-nav">
-			<li class="">
+			<li class="" *ngIf="dataService.user.loggedIn">
 				<a href="#" class="btn info-btn gray" routerLink="profile">Your Tasks</a>
 			</li>
-			<li class="">
-				<a href="#" class="btn info-btn gray" routerLink="login">Log In</a>
+			<li class="" *ngIf="dataService.user.loggedIn">
+				<a href="#" class="btn info-btn gray" routerLink="logout">Log Out</a>
+			</li>
+			<li class="" *ngIf="!dataService.user.loggedIn">
+				<a href="#" class="btn info-btn gray" routerLink="register">Log In</a>
 			</li>
 		</ul>
 	</div>
