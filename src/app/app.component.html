@@ -1,0 +1,34 @@
+<nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color: orange;">
+	<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="navbar-collapse collapse" id="navbarSupportedContent">
+		<a class="navbar-brand ml-auto mr-auto" routerLink="/home">
+			<strong>Competitive Programmers Collective</strong>
+		</a>
+
+		<ul class="navbar-nav">
+			<li class="">
+				<a href="#" class="btn info-btn gray" routerLink="profile">Your Tasks</a>
+			</li>
+			<li class="">
+				<a href="#" class="btn info-btn gray" routerLink="login">Log In</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+<div class="container-fluid base">
+	<router-outlet></router-outlet>
+</div>
+
+<footer class="footer fixed-bottom">
+	<div class="container-fluid" style="background-color: #f5ccba;">
+		<div class="row footer-row" style="">
+			<div class="col text-center">
+				<span>Made with <3 using ColonyJS</span>
+			</div>
+		</div>
+	</div>
+</footer>

@@ -1,0 +1,24 @@
+.base {
+  padding-bottom: 50px;
+  overflow: scroll;
+  height: 100%;
+  min-height: calc(100vh - 76px);
+  position: relative;
+}
+.gray {
+  color: gray;
+}
+.footer-row {
+  justify-content: space-between; 
+  font-size: 22px;
+}
+.footer-row a {
+  text-decoration: none;
+  color: black;
+}
+.fixed-bottom {
+  position: sticky;
+}
+.fixed-top {
+  position: sticky;
+}
