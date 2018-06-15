@@ -1,4 +1,142 @@
-<div class="row mt-5">
-	<div class="">
+<div *ngIf="task.details">
+	<div class="row mt-5">
+		<div class="col text-center">
+			<label>Task Name: {{task.details.title}}</label>
+		</div>
+	</div>
+	<div class="row mt-1">
+		<div class="col text-center">
+			<label>Task Name: {{task.details.description}}</label>
+		</div>
+	</div>
+
+	<div class="row mt-5">
+	</div>
+
+
+	<div class="row mt-2">
+		<div class="col text-center">
+			<label>Task ID: {{task.id}}</label>
+		</div>
+		<div class="col text-center">
+			<label>Domain ID: {{task.domainId}}</label>
+		</div>
+		<div class="col text-center">
+			<label>Pot ID: {{task.potId}}</label>
+		</div>
+		<div class="col text-center">
+			<label>Skill ID: {{task.skillId}}</label>
+		</div>
+	</div>
+
+	<div class="row mt-2" *ngIf="dataService.user.loggedIn == false">
+		<div class="col text-center">
+			<span>You must be logged in to apply for or evaluate questions.</span>
+		</div>
+	</div>
+
+	<div class="row mt-5" *ngIf="task.finalized == false && dataService.user.loggedIn == true">
+		<div class="col-md-4 offset-md-4">
+			<div class="row">
+				<div class="col text-center">
+					<button *ngIf="task.worker == null" (click)="applySolve()" class="btn btn-success clickme">Apply To Solve</button>
+
+					<button *ngIf="task.worker == dataService.user.wallet.address" (click)="submitQuestion()" class="btn btn-success clickme">Submit Solution</button>
+				</div>
+				<div class="col text-center">
+					<button *ngIf="task.worker != null && task.worker != dataService.user.wallet.address && task.evaluator == null" (click)="applyEvaluate()" class="btn btn-info clickme">Apply to Evaluate</button>
+
+					<button *ngIf="task.worker != null && task.evaluator == dataService.user.wallet.address" (click)="submitEvaluation()" class="btn btn-info clickme">Submit Evaluation</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+
+<!-- apply popup -->
+<button id="applyModalButton" type="button" style="display: none;" data-toggle="modal" data-target="#applyModal"></button>
+
+<div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="false">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="center">Application</h2>
+				<button type="button" class="close cursorHand" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" *ngIf="modal.apply.solve">
+				<h5 class="text-center">Confirm if you will solve this question. WARNING: Failure to submit solution by due date will cause loss of reputation.</h5>
+				<div class="col text-center">
+					<button class="btn btn-success clickme" (click)="applySolveConfirm()">APPLY TO SOLVE</button>
+				</div>
+			</div>
+			<div class="modal-body" *ngIf="modal.apply.evaluate">
+				<h5 class="text-center">Confirm if you will evaluate this question. WARNING: Failure to submit evaluation by due date will cause loss of reputation.</h5>
+				<div class="col text-center">
+					<button class="btn btn-success clickme" (click)="applyEvaluationConfirm()">APPLY TO EVALUATE</button>
+				</div>
+			</div>
+			<div class="modal-body" *ngIf="modal.apply.solveSuccess">
+				<h5 class="text-center">You have been assigned this question <strong>successfully</strong>! Please submit the link to your successful code (including a comment stating your address and this taskID) by the deadline.</h5>
+			</div>
+			<div class="modal-body" *ngIf="modal.apply.evaluateSuccess">
+				<h5 class="text-center">You have been assigned this evaluation <strong>successfully</strong>! Please check the linked answer for correctness and assign a rating of 1-3 (1 - unfinished code attempt, 2 - correct answer fulfilling basic testcases, 3 - correct answer fulfilling all testcases). Also verify a comment stating the worker's address and taskID exists in the source code.</h5>
+				<p><a href="{{task.details.url}}" target="_blank">{{task.details.url}}</a></p>
+			</div>
+			<div class="modal-body" *ngIf="modal.apply.error">
+				<h5 class="text-center">There was an error in your request. Please try later.</h5>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn clickme" (click)="closeModal()" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- apply popup -->
+
+<!-- submit popup -->
+<button id="submitModalButton" type="button" style="display: none;" data-toggle="modal" data-target="#submitModal"></button>
+
+<div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="false">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="center">Submission</h2>
+				<button type="button" class="close cursorHand" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body" *ngIf="modal.submit.solve">
+				<h5 class="text-center">Please enter the publicly viewable code submission URL, which will be rated by your evaluator.</h5>
+				<div class="col text-center">
+					<input type="text" [(ngModel)]="submit.rating.url" placeholder="Enter URL here">
+					<button class="btn btn-success clickme" (click)="submitQuestionConfirm()">Submit your Task</button>
+				</div>
+			</div>
+			<div class="modal-body" *ngIf="modal.submit.evaluate">
+				<h5 class="text-center">Please enter your rating for evaluating the source code.</h5>
+				<label>Reminder: URL to check is <a href="{{task.details.url}}" target="_blank">{{task.details.url}}</a></label>
+				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="1">1</label>
+				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="2">2</label>
+  				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="3">3</label>
+  				<div class="col text-center">
+					<button class="btn btn-success clickme" (click)="submitEvaluationConfirm()">Submit your Rating</button>
+				</div>
+			</div>
+			<div class="modal-body" *ngIf="modal.submit.solveSuccess">
+				<h5 class="text-center">You have submitted your question <strong>successfully</strong>! Please wait to be evaluated by your evaluator.</h5>
+			</div>
+			<div class="modal-body" *ngIf="modal.submit.evaluateSuccess">
+				<h5 class="text-center">You have submitted your evaluation <strong>successfully</strong>! Thank you.</h5>
+			</div>
+			<div class="modal-body" *ngIf="modal.submit.error">
+				<h5 class="text-center">There was an error in processing. Please try later.</h5>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn clickme" (click)="closeModal()" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- submit popup -->

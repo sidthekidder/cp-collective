@@ -32,6 +32,7 @@ export class ColonyComponent implements OnInit, OnDestroy {
     let that = this
 
     this.subColonyName = this.route.params.subscribe(params => {
+      console.log(params)
       that.colonyName = params.colony
 
       that.loadColonyData().then(() => {
@@ -59,29 +60,30 @@ export class ColonyComponent implements OnInit, OnDestroy {
   }
 
   domainLoop() {
-    console.log('datas domainc is ' + this.dataService.domainCount)
     var list = []
     for(var i = 0 ; i < this.dataService.domainCount ; i++) list.push(i)
-    console.log(list)
     return list
   }
 
   getTasks(type) {
     var list = []
 
+    // loop over all tasks in the colony
     for(var i = 0 ; i < this.dataService.tasks.length ; i++) {
-      let item = this.dataService.tasks[i]
-      if (item.domainId == Constants.domainNameToIdMapping[this.colonyName][this.domainName]) {
-
-        if (type == 1) {
-
-        } else if (type == 2) {
-
-        } else if (type == 3) {
-          if (item.finalized) 
-            list.push(item)
+      let task = this.dataService.tasks[i]
+      // check if domainID of task same as the current domainID
+      if (task.domainId == Constants.domainNameToIdMapping[this.colonyName][this.domainName]) {
+        switch(type) {
+          case 1:  // task without any worker assigned
+            if (task.worker == null) list.push(task)
+            break
+          case 2:  // task without any evaluator assigned
+            if (task.evaluator == null) list.push(task)
+            break
+          case 3:  // completed task
+            if (task.finalized) list.push(task)
+            break
         }
-        list.push(item)
       }
     }
 

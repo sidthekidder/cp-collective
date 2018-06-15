@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { ColonyComponent } from './colony/colony.component';
 import { QuestionComponent } from './question/question.component';
-import { EvaluateComponent } from './evaluate/evaluate.component';
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { DataService } from './data.service';
@@ -21,7 +20,6 @@ import { AppRoutingModule } from './app-routing.module';
     HomeComponent,
     ColonyComponent,
     QuestionComponent,
-    EvaluateComponent,
     ProfileComponent,
     RegisterComponent
   ],

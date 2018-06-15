@@ -18,4 +18,9 @@ export class AppComponent {
   ngOnInit() {
     let that = this
   }
+
+  logOut() {
+  	this.dataService.resetAccount()
+  	this.router.navigate(['/', 'home'])
+  }
 }

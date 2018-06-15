@@ -8,6 +8,7 @@ import * as $ from 'jquery';
 import EthersAdapter from '@colony/colony-js-adapter-ethers';
 import ColonyNetworkClient from '@colony/colony-js-client';
 import { Constants} from './constants'
+import { uuidv4 } from 'uuid/v4';
 
 import { providers, Wallet } from 'ethers';
 import { TrufflepigLoader } from '@colony/colony-js-contract-loader-http';
@@ -89,6 +90,11 @@ export class DataService {
     })
   }
 
+  resetAccount() {
+    this.user.wallet = {}
+    this.user.loggedIn = false
+  }
+
   async newAccount() {
     // Get the private key from the first account from the ganache-accounts
     // through trufflepig
@@ -96,6 +102,10 @@ export class DataService {
 
     // Create a wallet with the private key (so we have a balance we can use)
     this.user.wallet = new Wallet(privateKey, this.provider)
+    console.log('balance is')
+    // this.user.wallet.getBalance('latest').then((b)=>{
+      // console.log(b)
+    // })
 
     // Create an adapter (powered by ethers)
     const adapter = new EthersAdapter({
@@ -139,6 +149,7 @@ export class DataService {
   async connectToColony(colonyName) {
     if (this.colonyClient != undefined) return
 
+    // make sure that all data is loaded even if this is the first page opened (without navigating from homepage)
     const colonyId = Constants.colonyNameToIdMapping[colonyName]
 
     //TODO
@@ -149,18 +160,43 @@ export class DataService {
     // For a colony that exists already, you just need its ID:
     //TODO
     // this.colonyClient = await this.colonyNetworkClient.getColonyClient(colonyId);
-    console.log('getitng colony data now')
-    await this.getColonyData()
-    console.log(this.domains)
-    console.log(this.tasks)
+    this.clearColonyData()
+    await this.getColonyData(colonyName)
     return
   }
 
-  async getColonyData() {
-    this.domainCount = 5//TODO await this.colonyClient.getDomainCount.call()
-    this.taskCount = 3//TODO await this.colonyClient.getTaskCount.call()
+  async connectToColonyMultiple() {
+    let that = this
+    if (this.colonyClient != undefined) return
+
+    //TODO
+    // while (this.colonyNetworkClient == undefined) {
+      // await this.sleep(500)
+    // }
+
+    // loop through all colonies and get the data for each one
+    Object.keys(Constants.colonyNameToIdMapping).forEach((key) => {
+      let cid = Constants.colonyNameToIdMapping[key]
+      this.colonyNetworkClient.getColonyClient(cid).then((data) => {
+        that.colonyClient = data
+        that.getColonyData(key)
+      })
+    })
+
+    // For a colony that exists already, you just need its ID:
+    //TODO this.colonyClient = await this.colonyNetworkClient.getColonyClient(colonyId);
+
+    return
+  }
+
+  clearColonyData() {
     this.domains = []
     this.tasks = []
+  }
+
+  async getColonyData(colonyName) {
+    this.domainCount = 5//TODO await this.colonyClient.getDomainCount.call()
+    this.taskCount = 3//TODO await this.colonyClient.getTaskCount.call()
 
     for(var i = 0 ; i < this.domainCount ; i++) {
       let obj = {localSkillId: 1, potId: 1}//TODO await this.colonyClient.getDomain.call({taskId: i})
@@ -168,14 +204,128 @@ export class DataService {
     }
 
     for(var j = 0 ; j < this.taskCount ; j++) {
-      let obj = {id: 1, domainId: 0, specificationHash: 'abc', skillId: 1, potId: 1}//TODO await this.colonyClient.getTask.call({taskId: i})
+      let task = {id: 1, domainId: 0, specificationHash: 'abc', skillId: 1, potId: 1, finalized: false}//TODO await this.colonyClient.getTask.call({taskId: i})
 
-      let taskDetails = {title: 'Sample question', description: 'Difficult question about programming'}//TODO await ecp.getTaskSpecification(obj.specificationHash)
-      obj['details'] = taskDetails
-      this.tasks.push(obj)
+      // get specification details
+      let taskDetails = {'title': 'Sample question', 'description': 'Difficult question about programming: http://codeforces.com/problemset/problem/990/G', 'url': 'http://codeforces.com/problemset/submission/990/39109082'}//TODO await ecp.getTaskSpecification(obj.specificationHash)
+      task['details'] = taskDetails
+
+      // get role open/closed details
+      let taskWorker = {'address': null, 'rated': true, 'rating': 2}//TODO await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'WORKER' })
+      let taskEvaluator = {'address': null, 'rated': false, 'rating': null}//TODO await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'EVALUATOR' })
+
+      task['worker'] = (taskWorker.address != null)? taskWorker.address : null
+      task['evaluator'] = (taskEvaluator.address != null)? taskEvaluator.address : null
+
+      task['colonyName'] = colonyName
+      task['domainName'] = Constants.colonyToDomainMapping[colonyName][task.domainId].slug
+
+      this.tasks.push(task)
     }
-
     return
+  }
+
+  async assignTask(tid) {
+    this.startLoading()
+
+    let cResponse = {successful: true}//TODO await this.colonyClient.setTaskRoleUser.send({
+    //   taskId: tid,
+    //   role: 'WORKER',
+    //   user: this.user.wallet.address
+    // })
+
+    this.endLoading()
+    if (cResponse.successful) {
+      return {success: true}
+    } else {
+      return {success: false}
+    }    
+  }
+
+  async assignEvaluate(tid) {
+    this.startLoading()
+    console.log('creating new role for task:')
+    console.log({
+      taskId: tid,
+      role: 'EVALUATOR',
+      user: this.user.wallet.address
+    })
+    let cResponse = {successful: true}//TODO await this.colonyClient.setTaskRoleUser.send({
+    //   taskId: tid,
+    //   role: 'WORKER',
+    //   user: this.user.wallet.address
+    // })
+
+    this.endLoading()
+    if (cResponse.successful) {
+      return {success: true}
+    } else {
+      return {success: false}
+    }    
+  }
+
+  async submitTask(tid, url) {
+    this.startLoading()
+
+    const deliverableHash = 'abcde'//TODO await ecp.saveTaskSpecification({ url: url });
+
+    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskDeliverable.send({
+    //   taskId: tid,
+    //   deliverableHash: deliverableHash,
+    // })
+
+    this.endLoading()
+    if (cResponse.successful) {
+      return {success: true}
+    } else {
+      return {success: false}
+    }    
+  }
+
+  async submitTaskRating(tid, rating) {
+    this.startLoading()
+
+    let salt = uuidv4()
+    let ratingSecret = await this.colonyClient.generateSecret.call({
+      salt: salt,
+      value: rating
+    })
+
+    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskWorkRating.send({
+    //   taskId: tid,
+    //   role: 'WORKER',
+    //   ratingSecret: ratingSecret.secret,
+    // })
+
+    this.endLoading()
+    if (cResponse.successful) {
+      return {success: true}
+    } else {
+      return {success: false}
+    }    
+  }
+
+  async submitEvaluation(tid, rating) {
+    this.startLoading()
+
+    let salt = uuidv4()
+    let ratingSecret = await this.colonyClient.generateSecret.call({
+      salt: salt,
+      value: rating
+    })
+
+    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskWorkRating.send({
+    //   taskId: tid,
+    //   role: 'EVALUATOR',
+    //   ratingSecret: ratingSecret.secret,
+    // })
+
+    this.endLoading()
+    if (cResponse.successful) {
+      return {success: true}
+    } else {
+      return {success: false}
+    }    
   }
 
   startLoading() {

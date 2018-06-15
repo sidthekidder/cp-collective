@@ -19,3 +19,6 @@
 .fixed-top {
   position: sticky;
 }
+.clickme {
+  cursor: pointer;
+}

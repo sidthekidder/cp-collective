@@ -13,7 +13,7 @@
 				<a href="#" class="btn info-btn gray" routerLink="profile">Your Tasks</a>
 			</li>
 			<li class="" *ngIf="dataService.user.loggedIn">
-				<a href="#" class="btn info-btn gray" routerLink="logout">Log Out</a>
+				<button class="btn info-btn gray" (click)="logOut()">Log Out</button>
 			</li>
 			<li class="" *ngIf="!dataService.user.loggedIn">
 				<a href="#" class="btn info-btn gray" routerLink="register">Log In</a>
