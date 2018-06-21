@@ -1,49 +1,110 @@
-<div class="row mt-5" *ngIf="state == 1">
-	<div class="col">
-		<h3>Number of domains in this colony: {{dataService.domainCount}}</h3>
-		<ul>
-			<li *ngFor="let idx of domainLoop()">
-				<a href="#" routerLink="/colony/{{colonyName}}/{{colonyToDomainMapping[colonyName][idx].slug}}">{{colonyToDomainMapping[colonyName][idx].name}}</a>
-			</li>
-		</ul>
+
+<div class="container">
+
+<div class="row mt-5" *ngIf="state == 1">  
+	<div class="col text-center">
+		<div class="domain-list">
+			<h3>Number of domains in this colony: {{dataService.domainCount-1}}</h3>
+			<ul class="domain-list-row" *ngFor="let idx of domainLoop()">
+				<li class="domain-list-star"><span class="star goldstar"></span></li>
+				<li class="domain-list-title">
+					<a href="#" routerLink="/colony/{{colonyName}}/{{colonyToDomainMapping[colonyName][	idx].slug}}">{{colonyToDomainMapping[colonyName][idx].name}}</a>
+				</li>
+			</ul>
+		</div>
 	</div>
 </div>
 
 <div *ngIf="state == 2">
+
 	<div class="row mt-5">
+		<div class="col">
+			<a class="btn btn-info" href="#" routerLink="/colony/{{colonyName}}">Back</a>
+		</div>
 		<div class="col">
 			<h3>Number of Tasks(questions) in this domain: {{getTasks().length}}</h3>
 		</div>
 	</div>
-	
+
 	<div class="row mt-5">
-		<div class="col-md-6">
+		<div class="col">
 			<h3>Open Questions</h3>
-			<ul>
-				<li *ngFor="let task of getTasks(1)">
-					<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
-				</li>
-			</ul>
+				<div class="container-table100">
+					<div class="wrap-table100">
+						<div class="table">
+							<div class="row header">
+								<div class="cell">
+									Question Name
+								</div>
+								<div class="cell">
+									Points
+								</div>
+								<div class="cell">
+									Time Remaining
+								</div>
+							</div>
+
+							<div class="row" *ngFor="let task of getTasks(1)">
+								<div class="cell">
+									<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
+								</div>
+								<div class="cell">
+									31
+								</div>
+								<div class="cell">
+									5 days
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 		</div>
 
-		<div class="col-md-6">
+		<div class="col">
 			<h3>Open Evaluations</h3>
-			<ul>
-				<li *ngFor="let task of getTasks(2)">
-					<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question/{{task.id}}">{{task.details.title}}</a>
-				</li>
-			</ul>
+
+			<div class="container-table100">
+				<div class="wrap-table100">
+					<div class="table">
+						<div class="row header">
+							<div class="cell">
+								Question Name
+							</div>
+							<div class="cell">
+								Points
+							</div>
+							<div class="cell">
+								Time Remaining
+							</div>
+						</div>
+
+						<div class="row" *ngFor="let task of getTasks(2)">
+							<div class="cell">
+								<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
+							</div>
+							<div class="cell">
+								31
+							</div>
+							<div class="cell">
+								5 days
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<div class="row mt-5">
 		<div class="col text-center">
 			<h3>Finished Questions</h3>
-			<ul>
-				<li *ngFor="let task of getTasks(3)">
+			<ul class="domain-list-row" *ngFor="let task of getTasks(3)">
+				<li class="domain-list-title">
 					<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
 				</li>
 			</ul>
 		</div>
 	</div>
+</div>
+
 </div>

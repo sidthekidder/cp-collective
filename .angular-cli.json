@@ -10,7 +10,8 @@
       "assets": [
         "assets",
         "zilfavicon.ico",
-        "set-env.ts"
+        "app/generated_constants.js",
+        "ecp.js"
       ],
       "index": "index.html",
       "main": "main.ts",

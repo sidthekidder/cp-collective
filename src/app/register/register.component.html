@@ -19,4 +19,11 @@
 
 <div class="row mt-5" *ngIf="state == 3">
 
+	<div class="row mt-5">
+		<div class="col text-center">
+			<label class="align-bottom">Enter private key here: </label>
+			<input [(ngModel)]="importPrivateKey" type="text" spellcheck="false" autocomplete="off" id="input-pk" class="form-input">
+			<button (click)="importPk()" class="btn btn-success">Import</button>
+		</div>
+	</div>
 </div>

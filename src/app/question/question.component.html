@@ -1,5 +1,10 @@
 <div *ngIf="task.details">
 	<div class="row mt-5">
+		<div class="col">
+			<a class="btn btn-info" href="#" routerLink="/colony/{{colonyName}}/{{domainName}}">Back</a>
+		</div>
+	</div>
+	<div class="row mt-5">
 		<div class="col text-center">
 			<label>Task Name: {{task.details.title}}</label>
 		</div>
@@ -117,9 +122,9 @@
 			<div class="modal-body" *ngIf="modal.submit.evaluate">
 				<h5 class="text-center">Please enter your rating for evaluating the source code.</h5>
 				<label>Reminder: URL to check is <a href="{{task.details.url}}" target="_blank">{{task.details.url}}</a></label>
-				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="1">1</label>
-				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="2">2</label>
-  				<label><input ng-control="options" type="radio" [(ngModel)]="rating.evaluate" [value]="3">3</label>
+				<label><input ng-control="options" type="radio" [(ngModel)]="submit.rating.evaluate" [value]="1">1</label>
+				<label><input ng-control="options" type="radio" [(ngModel)]="submit.rating.evaluate" [value]="2">2</label>
+  				<label><input ng-control="options" type="radio" [(ngModel)]="submit.rating.evaluate" [value]="3">3</label>
   				<div class="col text-center">
 					<button class="btn btn-success clickme" (click)="submitEvaluationConfirm()">Submit your Rating</button>
 				</div>

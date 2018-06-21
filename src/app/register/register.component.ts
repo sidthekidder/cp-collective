@@ -13,9 +13,11 @@ import { environment } from '../../environments/environment';
 export class RegisterComponent implements OnInit, OnDestroy {
 
   state: number
+  importPrivateKey: string
 
   constructor(private router: Router, public dataService: DataService) {
     this.state = 1
+    this.importPrivateKey = ''
   }
 
   ngOnInit() {
@@ -23,6 +25,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.importPrivateKey = ''
   }
 
   loadData() {
@@ -39,5 +42,21 @@ export class RegisterComponent implements OnInit, OnDestroy {
     } else {
       this.state = newState
     }
+  }
+
+  importPk() {
+    // validate
+    if (this.importPrivateKey.length == 0) {
+      alert("Private key can't be empty!")
+      return
+    }
+
+    let that = this
+    this.dataService.existingAccount(this.importPrivateKey).then(() => {
+      that.router.navigate(['/', 'home'])
+      return
+    }).catch((e) => {
+      alert('Error in importing private key!')
+    })
   }
 }

@@ -61,7 +61,8 @@ export class ColonyComponent implements OnInit, OnDestroy {
 
   domainLoop() {
     var list = []
-    for(var i = 0 ; i < this.dataService.domainCount ; i++) list.push(i)
+    //HACK we loop over domainCount-1 because we don't want to count the root domain (which is already created)
+    for(var i = 0 ; i < this.dataService.domainCount-1 ; i++) list.push(i)
     return list
   }
 

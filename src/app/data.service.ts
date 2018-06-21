@@ -8,28 +8,40 @@ import * as $ from 'jquery';
 import EthersAdapter from '@colony/colony-js-adapter-ethers';
 import ColonyNetworkClient from '@colony/colony-js-client';
 import { Constants} from './constants'
-import { uuidv4 } from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
+import * as IPFS from 'ipfs';
+import * as BN from 'bn.js';
 
 import { providers, Wallet } from 'ethers';
 import { TrufflepigLoader } from '@colony/colony-js-contract-loader-http';
 import { environment } from '../environments/environment';
 
-import ecp from '../ecp';
+declare const Buffer
+
+// uPort integration
+// import registryArtifact from 'uport-registry';
+// import Contract from 'truffle-contract';
+// const Registry = Contract(registryArtifact)
 
 
 
 @Injectable()
 export class DataService {
 
-  networkLoading: boolean;
-  envName: string;
+  networkLoading: boolean
+  envName: string
   user: any
+  admin: any
+  accountCount: number
 
   // colonyjs variables
   loader: any
   provider: any
   colonyNetworkClient: any
   colonyClient: any
+  adminColonyNetworkClient: any
+  adminColonyClient: any
+  node: any // ipfs
 
   taskCount: number
   domainCount: number
@@ -44,10 +56,14 @@ export class DataService {
     this.domainCount = 0
     this.tasks = []
     this.domains = []
+    this.accountCount = 1
 
     // create the user object
     this.user = {
       'loggedIn': false
+    }
+    this.admin = {
+
     }
     this.initLib()
   }
@@ -61,7 +77,12 @@ export class DataService {
     this.loader = new TrufflepigLoader();
 
     // Create a provider for local TestRPC (Ganache)
-    this.provider = new providers.JsonRpcProvider('http://localhost:8545/');
+    // if (typeof web3 !== 'undefined') {
+    //   this.provider = new providers.Web3Provider(web3.currentProvider)
+    //   this.user.wallet = this.provider.getSigner()
+    // } else {
+      this.provider = new providers.JsonRpcProvider('http://localhost:8545/')
+    // }
 
     // create a demo account to view ColonyNetwork data
     // this will not create a proper user account - for that the user must generate a new account
@@ -73,6 +94,7 @@ export class DataService {
 
       // Create a wallet with the private key (so we have a balance we can use)
       that.user.wallet = new Wallet(privateKey, that.provider)
+      that.admin.wallet = that.user.wallet
 
       // Create an adapter (powered by ethers)
       const adapter = new EthersAdapter({
@@ -83,9 +105,18 @@ export class DataService {
 
       // Connect to ColonyNetwork with that adapter
       that.colonyNetworkClient = new ColonyNetworkClient({ adapter })
+
+      // use this secret admin connection for assigning tasks - it exists even after login
+      that.adminColonyNetworkClient = new ColonyNetworkClient({ adapter })
+
       that.colonyNetworkClient.init().then(() => {
-        console.log('just set colonynetworkclient now')
-        that.endLoading()
+        that.adminColonyNetworkClient.init().then(() => {
+          console.log('just set colonynetworkclient now')
+          // connect to IPFS
+          that.initIPFS().then(() => {
+            that.endLoading()
+          })
+        })
       })
     })
   }
@@ -98,14 +129,10 @@ export class DataService {
   async newAccount() {
     // Get the private key from the first account from the ganache-accounts
     // through trufflepig
-    const { privateKey } = await this.loader.getAccount(0)
+    const { privateKey } = await this.loader.getAccount(this.accountCount++)
 
     // Create a wallet with the private key (so we have a balance we can use)
     this.user.wallet = new Wallet(privateKey, this.provider)
-    console.log('balance is')
-    // this.user.wallet.getBalance('latest').then((b)=>{
-      // console.log(b)
-    // })
 
     // Create an adapter (powered by ethers)
     const adapter = new EthersAdapter({
@@ -124,7 +151,7 @@ export class DataService {
   async existingAccount(privateKey) {
     // Create a wallet with the private key (so we have a balance we can use)
     this.user.wallet = new Wallet(privateKey, this.provider)
-
+    
     // Create an adapter (powered by ethers)
     const adapter = new EthersAdapter({
       loader: this.loader,
@@ -152,14 +179,15 @@ export class DataService {
     // make sure that all data is loaded even if this is the first page opened (without navigating from homepage)
     const colonyId = Constants.colonyNameToIdMapping[colonyName]
 
-    //TODO
-    // while (this.colonyNetworkClient == undefined) {
-      // await this.sleep(500)
-    // }
+    while (this.colonyNetworkClient == undefined) {
+      await this.sleep(500)
+    }
 
     // For a colony that exists already, you just need its ID:
-    //TODO
-    // this.colonyClient = await this.colonyNetworkClient.getColonyClient(colonyId);
+    this.colonyClient = await this.colonyNetworkClient.getColonyClient(colonyId);
+    // keep admin updated too
+    this.adminColonyClient = await this.adminColonyNetworkClient.getColonyClient(colonyId);
+
     this.clearColonyData()
     await this.getColonyData(colonyName)
     return
@@ -169,10 +197,9 @@ export class DataService {
     let that = this
     if (this.colonyClient != undefined) return
 
-    //TODO
-    // while (this.colonyNetworkClient == undefined) {
-      // await this.sleep(500)
-    // }
+    while (this.colonyNetworkClient == undefined) {
+      await this.sleep(500)
+    }
 
     // loop through all colonies and get the data for each one
     Object.keys(Constants.colonyNameToIdMapping).forEach((key) => {
@@ -182,10 +209,6 @@ export class DataService {
         that.getColonyData(key)
       })
     })
-
-    // For a colony that exists already, you just need its ID:
-    //TODO this.colonyClient = await this.colonyNetworkClient.getColonyClient(colonyId);
-
     return
   }
 
@@ -195,44 +218,63 @@ export class DataService {
   }
 
   async getColonyData(colonyName) {
-    this.domainCount = 5//TODO await this.colonyClient.getDomainCount.call()
-    this.taskCount = 3//TODO await this.colonyClient.getTaskCount.call()
+    while (this.colonyClient == undefined) {
+      await this.sleep(500)
+    }
+
+    let dc = await this.colonyClient.getDomainCount.call()
+    this.domainCount = dc.count
+    let tc = await this.colonyClient.getTaskCount.call()
+    this.taskCount = tc.count
 
     for(var i = 0 ; i < this.domainCount ; i++) {
-      let obj = {localSkillId: 1, potId: 1}//TODO await this.colonyClient.getDomain.call({taskId: i})
+      let obj = await this.colonyClient.getDomain.call({domainId: i})
       this.domains.push(obj)
     }
 
     for(var j = 0 ; j < this.taskCount ; j++) {
-      let task = {id: 1, domainId: 0, specificationHash: 'abc', skillId: 1, potId: 1, finalized: false}//TODO await this.colonyClient.getTask.call({taskId: i})
+      console.log('starting task ' + j)
+      try {
+        let task = await this.colonyClient.getTask.call({taskId: j})
+        console.log(task)
+        // get specification details
+        console.log('getting spec hash ' + task.specificationHash)
+        if (task.specificationHash == null) {
+          //HACK if spec hash is empty then it's a unknown task so just skip it for now
+          this.taskCount += 1
+          continue
+        }
+        let taskDetails = {'title': 'Sample question', 'description': 'Difficult question about programming: http://codeforces.com/problemset/problem/990/G', 'url': 'http://codeforces.com/problemset/submission/990/39109082'}//FIXME await this.getTaskSpecification(task.specificationHash)
+        task['details'] = taskDetails
 
-      // get specification details
-      let taskDetails = {'title': 'Sample question', 'description': 'Difficult question about programming: http://codeforces.com/problemset/problem/990/G', 'url': 'http://codeforces.com/problemset/submission/990/39109082'}//TODO await ecp.getTaskSpecification(obj.specificationHash)
-      task['details'] = taskDetails
+        // get role open/closed details
+        let taskWorker = await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'WORKER' })
+        let taskEvaluator = await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'EVALUATOR' })
 
-      // get role open/closed details
-      let taskWorker = {'address': null, 'rated': true, 'rating': 2}//TODO await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'WORKER' })
-      let taskEvaluator = {'address': null, 'rated': false, 'rating': null}//TODO await this.colonyClient.getTaskRole.call({ taskId: task.id, role: 'EVALUATOR' })
+        task['worker'] = (taskWorker.address != null)? taskWorker.address : null
+        task['evaluator'] = (taskEvaluator.address != null)? taskEvaluator.address : null
 
-      task['worker'] = (taskWorker.address != null)? taskWorker.address : null
-      task['evaluator'] = (taskEvaluator.address != null)? taskEvaluator.address : null
-
-      task['colonyName'] = colonyName
-      task['domainName'] = Constants.colonyToDomainMapping[colonyName][task.domainId].slug
-
-      this.tasks.push(task)
+        task['colonyName'] = colonyName
+        task['domainName'] = Constants.colonyToDomainMapping[colonyName][task.domainId].slug
+        
+        this.tasks.push(task)
+      } catch (e) {
+        console.log("Error in retrieving task: " + e)
+        continue
+      }
     }
+    console.log(this.tasks)
     return
   }
 
   async assignTask(tid) {
     this.startLoading()
 
-    let cResponse = {successful: true}//TODO await this.colonyClient.setTaskRoleUser.send({
-    //   taskId: tid,
-    //   role: 'WORKER',
-    //   user: this.user.wallet.address
-    // })
+    let cResponse = await this.adminColonyClient.setTaskRoleUser.send({
+      taskId: tid,
+      role: 'WORKER',
+      user: this.user.wallet.address
+    })
 
     this.endLoading()
     if (cResponse.successful) {
@@ -244,17 +286,12 @@ export class DataService {
 
   async assignEvaluate(tid) {
     this.startLoading()
-    console.log('creating new role for task:')
-    console.log({
+
+    let cResponse = await this.adminColonyClient.setTaskRoleUser.send({
       taskId: tid,
       role: 'EVALUATOR',
       user: this.user.wallet.address
     })
-    let cResponse = {successful: true}//TODO await this.colonyClient.setTaskRoleUser.send({
-    //   taskId: tid,
-    //   role: 'WORKER',
-    //   user: this.user.wallet.address
-    // })
 
     this.endLoading()
     if (cResponse.successful) {
@@ -267,12 +304,12 @@ export class DataService {
   async submitTask(tid, url) {
     this.startLoading()
 
-    const deliverableHash = 'abcde'//TODO await ecp.saveTaskSpecification({ url: url });
+    const deliverableHash = await this.saveTaskSpecification({ url: url });
 
-    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskDeliverable.send({
-    //   taskId: tid,
-    //   deliverableHash: deliverableHash,
-    // })
+    let cResponse = {successful: true} /*FIXME await this.colonyClient.submitTaskDeliverable.send({
+      taskId: tid,
+      deliverableHash: deliverableHash,
+    })*/
 
     this.endLoading()
     if (cResponse.successful) {
@@ -285,17 +322,19 @@ export class DataService {
   async submitTaskRating(tid, rating) {
     this.startLoading()
 
-    let salt = uuidv4()
+    let salt = uuid()
+    let val = new BN(rating, 10)
+
     let ratingSecret = await this.colonyClient.generateSecret.call({
       salt: salt,
-      value: rating
+      value: val
     })
 
-    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskWorkRating.send({
-    //   taskId: tid,
-    //   role: 'WORKER',
-    //   ratingSecret: ratingSecret.secret,
-    // })
+    let cResponse = {successful: true} /*FIXME await this.colonyClient.submitTaskWorkRating.send({
+      taskId: tid,
+      role: 'WORKER',
+      ratingSecret: ratingSecret.secret,
+    })*/
 
     this.endLoading()
     if (cResponse.successful) {
@@ -308,17 +347,19 @@ export class DataService {
   async submitEvaluation(tid, rating) {
     this.startLoading()
 
-    let salt = uuidv4()
+    let salt = uuid()
+    let val = new BN(rating)
+
     let ratingSecret = await this.colonyClient.generateSecret.call({
       salt: salt,
-      value: rating
+      value: val
     })
 
-    let cResponse = {successful: true}//TODO await this.colonyClient.submitTaskWorkRating.send({
-    //   taskId: tid,
-    //   role: 'EVALUATOR',
-    //   ratingSecret: ratingSecret.secret,
-    // })
+    let cResponse = {successful: true} /*FIXME await this.colonyClient.submitTaskWorkRating.send({
+      taskId: tid,
+      role: 'EVALUATOR',
+      ratingSecret: ratingSecret.secret,
+    })*/
 
     this.endLoading()
     if (cResponse.successful) {
@@ -326,6 +367,43 @@ export class DataService {
     } else {
       return {success: false}
     }    
+  }
+
+  // `FS helper methods
+  waitForIPFS() {
+    this.node = new IPFS({ start: false })
+
+    let that = this
+    return new Promise((resolve, reject) => {
+      that.node.on('ready', () => resolve(true));
+      that.node.on('error', err => reject(err));
+    })
+  }
+
+  async initIPFS() {
+    await this.waitForIPFS()
+    return this.node.start()
+  }
+
+  async saveTaskSpecification(spec) {
+    const data = Buffer.from(JSON.stringify(spec))
+    const result = await this.node.files.add(data)
+    return result[0].hash
+  }
+
+  async getTaskSpecification(hash) {
+    const buf = await this.node.files.cat(hash)
+    let spec
+    try {
+      spec = JSON.parse(buf.toString())
+    } catch (e) {
+      throw new Error(`Could not get task specification for hash ${hash}`)
+    }
+    return spec;
+  }
+
+  stopIPFS() { 
+    this.node.stop() 
   }
 
   startLoading() {

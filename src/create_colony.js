@@ -4,6 +4,10 @@ const { providers, Wallet } = require('ethers');
 const { default: EthersAdapter } = require('@colony/colony-js-adapter-ethers');
 const { TrufflepigLoader } = require('@colony/colony-js-contract-loader-http');
 
+var fs = require('fs');
+var Constants = require('./app/generated_constants.js')
+const ecp = require('./ecp');
+
 // Import the ColonyNetworkClient
 const { default: ColonyNetworkClient } = require('@colony/colony-js-client');
 
@@ -34,34 +38,141 @@ const example = async () => {
   const networkClient = new ColonyNetworkClient({ adapter });
   await networkClient.init();
 
-  // Let's deploy a new ERC20 token for our Colony.
-  // You could also skip this step and use a pre-existing/deployed contract.
+  await ecp.init();
+
+
+  //////////////////////////////////////////////////////////////////
+  // Deploy the ERC20 token for all Colonies
+  //////////////////////////////////////////////////////////////////
   const tokenAddress = await networkClient.createToken({
-    name: 'Cool Colony Token',
-    symbol: 'COLNY',
+    name: 'Competitive Programmers Collective',
+    symbol: 'PROG',
   });
   console.log('Token address: ' + tokenAddress);
 
-  // Create a cool Colony!
-  const {
-    eventData: { colonyId, colonyAddress },
-  } = await networkClient.createColony.send({ tokenAddress });
+  //////////////////////////////////////////////////////////////////
+  // Create the Colonies - algorithms, data-structures, misc
+  //////////////////////////////////////////////////////////////////
+  let algoData = await networkClient.createColony.send({ tokenAddress });
+  let dsData = await networkClient.createColony.send({ tokenAddress });
+  let miscData = await networkClient.createColony.send({ tokenAddress });
 
-  // Congrats, you've created a Colony!
-  console.log('Colony ID: ' + colonyId);
-  console.log('Colony address: ' + colonyAddress);
+  // update the colony ids in app constants
+  Constants.colonyNameToIdMapping['algorithms'] = algoData.eventData.colonyId
+  Constants.colonyNameToIdMapping['data-structures'] = dsData.eventData.colonyId
+  Constants.colonyNameToIdMapping['misc'] = miscData.eventData.colonyId
 
-  // For a colony that exists already, you just need its ID:
-  const colonyClient = await networkClient.getColonyClient(colonyId);
 
-  // Or alternatively, just its address:
-  // const colonyClient = await networkClient.getColonyClientByAddress(colonyAddress);
+  //////////////////////////////////////////////////////////////////
+  // Initialize the Algorithm colony
+  //////////////////////////////////////////////////////////////////
+  const algoColonyClient = await networkClient.getColonyClient(algoData.eventData.colonyId)
+  const algoSkillId = await algoColonyClient.getDomain.call({ domainId: 1 })
 
-  // You can also get the Meta Colony:
-  const metaColonyClient = await networkClient.getMetaColonyClient();
-  console.log('Meta Colony address: ' + metaColonyClient.contract.address);
+console.log('a')
+  // search, strings, sorting, greedy, dynamic programming
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+  await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
+console.log('b')
+  // use algoCount -0, -1, -2 etc respectively for above domains
+  var count = await algoColonyClient.getDomainCount.call()
+  let algoCount = count.count
+  console.log('algocount is ' + algoCount)
 
-  return colonyClient;
+  // sample questions
+  var specificationHash = await ecp.saveTaskSpecification({ title: 'Q1', description: 'Search question 1.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q2', description: 'Search question 2.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q3', description: 'Strings question 1.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-4  });
+console.log('c')
+  // update the ids in constants file
+  Constants.domainNameToIdMapping['algorithms']['search'] = algoCount-5
+  Constants.domainNameToIdMapping['algorithms']['strings'] = algoCount-4
+  Constants.domainNameToIdMapping['algorithms']['sorting'] = algoCount-3
+  Constants.domainNameToIdMapping['algorithms']['greedy'] = algoCount-2
+  Constants.domainNameToIdMapping['algorithms']['dp'] = algoCount-1
+  Constants.domainNameToIdMapping['algorithms']['misc'] = algoCount
+console.log('d')
+  //////////////////////////////////////////////////////////////////
+  // Initialize the Data Structures colony
+  //////////////////////////////////////////////////////////////////
+  const dsColonyClient = await networkClient.getColonyClient(dsData.eventData.colonyId)
+  const dsSkillId = await dsColonyClient.getDomain.call({ domainId: 1 })
+console.log('e')
+  // linked-lists, arrays, trees, stacks-queues, graphs
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+  await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
+console.log('f')
+  // use dsCount -0, -1, -2 etc respectively for above domains
+  count = await dsColonyClient.getDomainCount.call()
+  let dsCount = count.count
+  console.log('dscount is ' + dsCount)
+
+  // sample questions
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q4', description: 'Linked lists question 1.' });
+  await dsColonyClient.createTask.send({ specificationHash: specificationHash, domainId: dsCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q5', description: 'Arrays question 1.' });
+  await dsColonyClient.createTask.send({ specificationHash: specificationHash, domainId: dsCount-4  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q6', description: 'Arrays question 2.' });
+  await dsColonyClient.createTask.send({ specificationHash: specificationHash, domainId: dsCount-4  });
+console.log('g')
+  // update the ids in constants file
+  Constants.domainNameToIdMapping['data-structures']['linked-lists'] = dsCount-5
+  Constants.domainNameToIdMapping['data-structures']['arrays'] = dsCount-4
+  Constants.domainNameToIdMapping['data-structures']['stacks-queues'] = dsCount-3
+  Constants.domainNameToIdMapping['data-structures']['trees'] = dsCount-2
+  Constants.domainNameToIdMapping['data-structures']['hash-maps'] = dsCount-1
+  Constants.domainNameToIdMapping['data-structures']['graphs'] = dsCount
+
+  //////////////////////////////////////////////////////////////////
+  // Initialize the Miscellaneous colony
+  //////////////////////////////////////////////////////////////////
+  const miscColonyClient = await networkClient.getColonyClient(miscData.eventData.colonyId)
+  const miscSkillId = await miscColonyClient.getDomain.call({ domainId: 1 })
+console.log('h')
+  // maths, sql
+  await miscColonyClient.addDomain.send({parentSkillId: miscSkillId.localSkillId})
+  await miscColonyClient.addDomain.send({parentSkillId: miscSkillId.localSkillId})
+console.log('i')
+  // use miscCount -0, -1, -2 etc respectively for above domains
+  count = await miscColonyClient.getDomainCount.call()
+  let miscCount = count.count
+  console.log('miscCount is ' + miscCount)
+
+  // sample questions
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q7', description: 'Linked lists question 1.' })
+  await miscColonyClient.createTask.send({ specificationHash: specificationHash, domainId: miscCount-1  })
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q8', description: 'Arrays question 1.' })
+  await miscColonyClient.createTask.send({ specificationHash: specificationHash, domainId: miscCount  })
+console.log('j')
+  // update the ids in constants file
+  Constants.domainNameToIdMapping['misc']['linked-lists'] = miscCount-1
+  Constants.domainNameToIdMapping['misc']['arrays'] = miscCount
+
+
+  // write the updates to file
+  fs.writeFileSync(__dirname + '/app/generated_constants.js', 'module.exports = ' + JSON.stringify(Constants, null, 2))
+
+  // cleanup
+  await ecp.stop();
+  return
+
 };
 
 module.exports = example;
+
