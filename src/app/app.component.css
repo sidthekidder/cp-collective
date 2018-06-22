@@ -22,3 +22,14 @@
 .clickme {
   cursor: pointer;
 }
+.btn-cp {
+  color: black;
+  background-color: #ffffff9c;
+}
+.bg-orange {
+  background-color: orange;
+  color: black;
+}
+.black {
+  color: black;
+}

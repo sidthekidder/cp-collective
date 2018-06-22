@@ -1,29 +1,26 @@
 <div class="row mt-5" *ngIf="state == 1">
 	<div class="col-md-2 offset-md-4">
-		<button (click)="setState(2)">Create a new account</button>
+		<button class="btn bg-orange clickme" (click)="setState(2)">Create a new account</button>
 	</div>
 	<div class="col-md-2">
-		<button (click)="setState(3)">Use existing account</button>
+		<button class="btn bg-orange clickme" (click)="setState(3)">Use existing account</button>
 	</div>
 </div>
 
 <div class="row mt-5" *ngIf="state == 2">
 	<div class="col-md-12 text-center">
-		<h3>Your private key is {{dataService.user.wallet.privateKey}}</h3>
+		<h3>Your private key is <span style="background-color: #ffa5004d">{{dataService.user.wallet.privateKey}}</span></h3>
 	</div>
 
 	<div class="col text-center">
-		<a href="#" class="btn info-btn" routerLink="/home">Continue</a>
+		<a href="#" class="btn bg-orange" routerLink="/home">Continue</a>
 	</div>
 </div>
 
 <div class="row mt-5" *ngIf="state == 3">
-
-	<div class="row mt-5">
-		<div class="col text-center">
-			<label class="align-bottom">Enter private key here: </label>
-			<input [(ngModel)]="importPrivateKey" type="text" spellcheck="false" autocomplete="off" id="input-pk" class="form-input">
-			<button (click)="importPk()" class="btn btn-success">Import</button>
-		</div>
+	<div class="col text-center">
+		<label class="align-bottom">Enter private key here: </label>
+		<input [(ngModel)]="importPrivateKey" type="text" spellcheck="false" autocomplete="off" id="input-pk" class="form-input">
+		<button (click)="importPk()" class="btn bg-orange clickme">Import</button>
 	</div>
 </div>

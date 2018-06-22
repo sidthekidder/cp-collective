@@ -4,8 +4,8 @@
   margin: auto;
 }
 .domain-list-row {
-  margin:0;
-  padding: 10px 40px;
+  margin: 5px;
+  padding: 10px 0px;
   list-style: none;
 }
 .domain-list-row:after {
@@ -18,24 +18,10 @@
   vertical-align: top;
   float: left;
 }
-.domain-list-star {
-  min-width: 54px;
-  text-align: center;
-  width: 16%;
-}
 .domain-list-title {
-  min-width: 160px;
+  min-width: 100%;
   font-size: 18px;
   font-weight: normal;
-  padding-top: 10px;
-}
-.star {
-  display:block;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #bdc2c1;
-  background: #d6d6d6;  
 }
 
 
@@ -54,42 +40,37 @@
   justify-content: center;
 }
 
-.wrap-table100 {
-  width: 960px;
-}
-
 @media screen and (max-width: 768px) {
   .table {
     display: block;
   }
 }
 
-.row {
+.wrap-table100 .row {
   display: table-row;
   background: #fff;
 }
 
-.row.header {
+.wrap-table100 .row.header {
   color: #ffffff;
-  background: #6c7ae0;
+  background: orange;
 }
 
 @media screen and (max-width: 768px) {
-  .row {
+  .wrap-table100 .row {
     display: block;
   }
 
-  .row.header {
+  .wrap-table100 .row.header {
     padding: 0;
     height: 0px;
   }
 
-  .row.header .cell {
+  .wrap-table100 .row.header .cell {
     display: none;
   }
 
-  .row .cell:before {
-    font-family: Poppins-Bold;
+  .wrap-table100 .row .cell:before {
     font-size: 12px;
     color: #808080;
     line-height: 1.2;
@@ -113,8 +94,7 @@
   }
 }
 
-.row .cell {
-  font-family: Poppins-Regular;
+.wrap-table100 .row .cell {
   font-size: 15px;
   color: #666666;
   line-height: 1.2;
@@ -126,7 +106,6 @@
 }
 
 .row.header .cell {
-  font-family: Poppins-Regular;
   font-size: 18px;
   color: #fff;
   line-height: 1.2;
@@ -154,7 +133,7 @@
 }
 
 @media (max-width: 768px) {
-  .row {
+  .wrap-table100 .row {
     border-bottom: 1px solid #f2f2f2;
     padding-bottom: 18px;
     padding-top: 30px;
@@ -173,14 +152,13 @@
   }
   
   .row .cell {
-    font-family: Poppins-Regular;
     font-size: 18px;
     color: #555555;
     line-height: 1.2;
     font-weight: unset !important;
   }
 
-  .table, .row, .cell {
+  .table, .wrap-table100 .row, .cell {
     width: 100% !important;
   }
 }

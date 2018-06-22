@@ -22,10 +22,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadData()
+    this.state = 1
+    
+    if (this.dataService.user.loggedIn == true) {
+      this.router.navigate(['/', 'profile'])
+    }
   }
 
   ngOnDestroy() {
     this.importPrivateKey = ''
+    this.state = 1
   }
 
   loadData() {
@@ -34,7 +40,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   setState(newState) {
     if (newState == 2) {
-      console.log('calling newaccount')
       this.dataService.newAccount().then(() => {
         this.state = newState
         return

@@ -80,3 +80,12 @@
     margin-top: 7rem;
   }
 }
+
+.homeImg {
+  overflow: hidden;
+}
+
+.btn-cp {
+  background-color: #ffffffd9;
+}
+

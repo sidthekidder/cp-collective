@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { DataService } from '../data.service';
 import { Constants } from '../constants';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -12,13 +13,12 @@ import { Constants } from '../constants';
 })
 export class ProfileComponent implements OnInit, OnDestroy {
 
-  constructor(private dataService: DataService, private route: ActivatedRoute) { 
+  constructor(public dataService: DataService, private route: ActivatedRoute, public router: Router) { 
 
   }
 
   ngOnInit() {
     let that = this
-    // this.loadData()
   }
 
   loadData() {

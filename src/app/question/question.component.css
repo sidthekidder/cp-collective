@@ -1,7 +1,7 @@
 @import '../app.component.css';
 
 #applyModal .modal-content {
-  background-color: orange; border: 1px solid #49c1bf;
+  background-color: #ffbc00; border: 1px solid #49c1bf;
 }
 #applyModal .modal-header {
   padding-left: 35%; border-bottom: 1px solid #49c1bf; color: #49c1bf;
@@ -18,7 +18,7 @@
 }
 
 #submitModal .modal-content {
-  background-color: orange; border: 1px solid #49c1bf;
+  background-color: #ffbc00; border: 1px solid #49c1bf;
 }
 #submitModal .modal-header {
   padding-left: 35%; border-bottom: 1px solid #49c1bf; color: #49c1bf;

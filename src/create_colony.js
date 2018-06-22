@@ -90,7 +90,16 @@ console.log('b')
   specificationHash = await ecp.saveTaskSpecification({ title: 'Q2', description: 'Search question 2.' });
   await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
 
-  specificationHash = await ecp.saveTaskSpecification({ title: 'Q3', description: 'Strings question 1.' });
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q3', description: 'Search question 3.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q4', description: 'Search question 4.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q5', description: 'Search question 5.' });
+  await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-5  });
+
+  specificationHash = await ecp.saveTaskSpecification({ title: 'Q6', description: 'Strings question 6.' });
   await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-4  });
 console.log('c')
   // update the ids in constants file

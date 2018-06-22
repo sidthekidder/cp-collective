@@ -1,1 +1,25 @@
 @import '../app.component.css';
+
+.domain-list {
+  margin: auto;
+}
+.domain-list-row {
+  margin: 5px;
+  padding: 10px 0px;
+  list-style: none;
+}
+.domain-list-row:after {
+  content: '';
+  display: table;
+  clear:both;
+}
+.domain-list-row li {
+  display:inline-block;
+  vertical-align: top;
+  float: left;
+}
+.domain-list-title {
+  min-width: 100%;
+  font-size: 18px;
+  font-weight: normal;
+}

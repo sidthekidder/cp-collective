@@ -149,6 +149,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   submitQuestionConfirm() {
+    console.log('1. confirmed')
     let that = this
 
     this.dataService.submitTask(this.task.id, this.submit.rating.url).then((data) => {
@@ -161,6 +162,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
         // temporary fix for UI
         that.task.finalized = true
       }
+    }).catch((e) => {
+      console.log('Error!')
+      console.log(e)
+      that.modal.submit.error = true
     })
   }
 

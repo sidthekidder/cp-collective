@@ -18,12 +18,6 @@ import { environment } from '../environments/environment';
 
 declare const Buffer
 
-// uPort integration
-// import registryArtifact from 'uport-registry';
-// import Contract from 'truffle-contract';
-// const Registry = Contract(registryArtifact)
-
-
 
 @Injectable()
 export class DataService {
@@ -174,12 +168,13 @@ export class DataService {
   }
 
   async connectToColony(colonyName) {
+    console.log('connecting to colony now')
     if (this.colonyClient != undefined) return
 
     // make sure that all data is loaded even if this is the first page opened (without navigating from homepage)
     const colonyId = Constants.colonyNameToIdMapping[colonyName]
 
-    while (this.colonyNetworkClient == undefined) {
+    while (this.colonyNetworkClient == undefined || this.adminColonyNetworkClient == undefined) {
       await this.sleep(500)
     }
 
@@ -275,13 +270,8 @@ export class DataService {
       role: 'WORKER',
       user: this.user.wallet.address
     })
-
     this.endLoading()
-    if (cResponse.successful) {
-      return {success: true}
-    } else {
-      return {success: false}
-    }    
+    return { success: cResponse.successful }
   }
 
   async assignEvaluate(tid) {
@@ -302,14 +292,39 @@ export class DataService {
   }
 
   async submitTask(tid, url) {
+    console.log('started dS.submitTask')
     this.startLoading()
+
+
+    console.log("starting multisig")
+    // set the due date as Now using multi-sig op to sign both admin(manager) and current worker
+    const op = await this.colonyClient.setTaskDueDate.startOperation({
+      taskId: tid,
+      dueDate: new Date()
+    })
+    console.log('got op')
+    // sign with the worker
+    await op.sign()
+    console.log(op.requiredSignees)
+
+    // now sign with the manager
+    const json = op.toJSON()
+    console.log("now signing wi/ manager")
+    console.log(json)
+    const opAdmin = await this.adminColonyClient.setTaskDueDate.restoreOperation(json);
+    console.log('33/')
+    await opAdmin.sign()
+    console.log("done all")
+    // finally send the multi-sig op
+    const { successful } = await op.send()
+    console.log('sent, its ' + successful)
 
     const deliverableHash = await this.saveTaskSpecification({ url: url });
 
-    let cResponse = {successful: true} /*FIXME await this.colonyClient.submitTaskDeliverable.send({
+    let cResponse = await this.colonyClient.submitTaskDeliverable.send({
       taskId: tid,
       deliverableHash: deliverableHash,
-    })*/
+    })
 
     this.endLoading()
     if (cResponse.successful) {

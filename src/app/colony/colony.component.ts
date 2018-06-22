@@ -32,7 +32,6 @@ export class ColonyComponent implements OnInit, OnDestroy {
     let that = this
 
     this.subColonyName = this.route.params.subscribe(params => {
-      console.log(params)
       that.colonyName = params.colony
 
       that.loadColonyData().then(() => {

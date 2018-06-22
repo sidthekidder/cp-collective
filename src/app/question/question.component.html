@@ -1,36 +1,46 @@
 <div *ngIf="task.details">
-	<div class="row mt-5">
-		<div class="col">
-			<a class="btn btn-info" href="#" routerLink="/colony/{{colonyName}}/{{domainName}}">Back</a>
+	<div class="row mt-2">
+		<div class="col mt-2">
+			<a class="btn bg-orange" href="#" routerLink="/colony/{{colonyName}}/{{domainName}}">&lt; Back</a>
 		</div>
 	</div>
-	<div class="row mt-5">
-		<div class="col text-center">
-			<label>Task Name: {{task.details.title}}</label>
-		</div>
-	</div>
+
 	<div class="row mt-1">
 		<div class="col text-center">
-			<label>Task Name: {{task.details.description}}</label>
+			<h3>Task Name</h3>
 		</div>
 	</div>
 
-	<div class="row mt-5">
+	<div class="row">
+		<div class="col text-center">
+			<label>{{task.details.title}}</label>
+		</div>
 	</div>
 
+	<div class="row mt-1">
+		<div class="col text-center">
+			<h3>Task Description</h3>
+		</div>
+	</div>
 
-	<div class="row mt-2">
+	<div class="row">
 		<div class="col text-center">
-			<label>Task ID: {{task.id}}</label>
+			<label>{{task.details.description}}</label>
+		</div>
+	</div>
+
+	<div class="row mt-4">
+		<div class="col text-center">
+			<span><b>Task ID:</b> {{task.id}}</span>
 		</div>
 		<div class="col text-center">
-			<label>Domain ID: {{task.domainId}}</label>
+			<label><strong>Domain ID:</strong> {{task.domainId}}</label>
 		</div>
 		<div class="col text-center">
-			<label>Pot ID: {{task.potId}}</label>
+			<label><strong>Pot ID:</strong> {{task.potId}}</label>
 		</div>
 		<div class="col text-center">
-			<label>Skill ID: {{task.skillId}}</label>
+			<label><strong>Skill ID:</strong> {{task.skillId}}</label>
 		</div>
 	</div>
 
@@ -44,14 +54,14 @@
 		<div class="col-md-4 offset-md-4">
 			<div class="row">
 				<div class="col text-center">
-					<button *ngIf="task.worker == null" (click)="applySolve()" class="btn btn-success clickme">Apply To Solve</button>
+					<button *ngIf="task.worker == null" (click)="applySolve()" class="btn bg-orange clickme">Apply To Solve</button>
 
-					<button *ngIf="task.worker == dataService.user.wallet.address" (click)="submitQuestion()" class="btn btn-success clickme">Submit Solution</button>
+					<button *ngIf="task.worker == dataService.user.wallet.address" (click)="submitQuestion()" class="btn bg-orange clickme">Submit Solution</button>
 				</div>
 				<div class="col text-center">
-					<button *ngIf="task.worker != null && task.worker != dataService.user.wallet.address && task.evaluator == null" (click)="applyEvaluate()" class="btn btn-info clickme">Apply to Evaluate</button>
+					<button *ngIf="task.worker != null && task.worker != dataService.user.wallet.address && task.evaluator == null" (click)="applyEvaluate()" class="btn bg-orange clickme">Apply to Evaluate</button>
 
-					<button *ngIf="task.worker != null && task.evaluator == dataService.user.wallet.address" (click)="submitEvaluation()" class="btn btn-info clickme">Submit Evaluation</button>
+					<button *ngIf="task.worker != null && task.evaluator == dataService.user.wallet.address" (click)="submitEvaluation()" class="btn bg-orange clickme">Submit Evaluation</button>
 				</div>
 			</div>
 		</div>
@@ -65,7 +75,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="center">Application</h2>
+				<h2 class="black center">Application</h2>
 				<button type="button" class="close cursorHand" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -73,13 +83,13 @@
 			<div class="modal-body" *ngIf="modal.apply.solve">
 				<h5 class="text-center">Confirm if you will solve this question. WARNING: Failure to submit solution by due date will cause loss of reputation.</h5>
 				<div class="col text-center">
-					<button class="btn btn-success clickme" (click)="applySolveConfirm()">APPLY TO SOLVE</button>
+					<button class="btn bg-orange clickme" (click)="applySolveConfirm()">APPLY TO SOLVE</button>
 				</div>
 			</div>
 			<div class="modal-body" *ngIf="modal.apply.evaluate">
 				<h5 class="text-center">Confirm if you will evaluate this question. WARNING: Failure to submit evaluation by due date will cause loss of reputation.</h5>
 				<div class="col text-center">
-					<button class="btn btn-success clickme" (click)="applyEvaluationConfirm()">APPLY TO EVALUATE</button>
+					<button class="btn bg-orange clickme" (click)="applyEvaluationConfirm()">APPLY TO EVALUATE</button>
 				</div>
 			</div>
 			<div class="modal-body" *ngIf="modal.apply.solveSuccess">
@@ -107,7 +117,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="center">Submission</h2>
+				<h2 class="black center">Submission</h2>
 				<button type="button" class="close cursorHand" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -116,7 +126,7 @@
 				<h5 class="text-center">Please enter the publicly viewable code submission URL, which will be rated by your evaluator.</h5>
 				<div class="col text-center">
 					<input type="text" [(ngModel)]="submit.rating.url" placeholder="Enter URL here">
-					<button class="btn btn-success clickme" (click)="submitQuestionConfirm()">Submit your Task</button>
+					<button class="btn bg-orange clickme" (click)="submitQuestionConfirm()">Submit your Task</button>
 				</div>
 			</div>
 			<div class="modal-body" *ngIf="modal.submit.evaluate">
@@ -126,7 +136,7 @@
 				<label><input ng-control="options" type="radio" [(ngModel)]="submit.rating.evaluate" [value]="2">2</label>
   				<label><input ng-control="options" type="radio" [(ngModel)]="submit.rating.evaluate" [value]="3">3</label>
   				<div class="col text-center">
-					<button class="btn btn-success clickme" (click)="submitEvaluationConfirm()">Submit your Rating</button>
+					<button class="btn bg-orange clickme" (click)="submitEvaluationConfirm()">Submit your Rating</button>
 				</div>
 			</div>
 			<div class="modal-body" *ngIf="modal.submit.solveSuccess">

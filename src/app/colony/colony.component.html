@@ -2,14 +2,15 @@
 <div class="container">
 
 <div class="row mt-5" *ngIf="state == 1">  
-	<div class="col text-center">
-		<div class="domain-list">
-			<h3>Number of domains in this colony: {{dataService.domainCount-1}}</h3>
-			<ul class="domain-list-row" *ngFor="let idx of domainLoop()">
-				<li class="domain-list-star"><span class="star goldstar"></span></li>
-				<li class="domain-list-title">
-					<a href="#" routerLink="/colony/{{colonyName}}/{{colonyToDomainMapping[colonyName][	idx].slug}}">{{colonyToDomainMapping[colonyName][idx].name}}</a>
-				</li>
+	<div class="col-md-3">
+		<h3>Domains Available:</h3>
+	</div>
+	<div class="col-md-7">
+		<div class="domain-list text-center">
+			<ul class="domain-list-row bg-orange" *ngFor="let idx of domainLoop()">
+				<a href="#" class="black" routerLink="/colony/{{colonyName}}/{{colonyToDomainMapping[colonyName][	idx].slug}}">
+					<li class="domain-list-title">{{colonyToDomainMapping[colonyName][idx].name}}</li>
+				</a>
 			</ul>
 		</div>
 	</div>
@@ -17,19 +18,16 @@
 
 <div *ngIf="state == 2">
 
-	<div class="row mt-5">
-		<div class="col">
-			<a class="btn btn-info" href="#" routerLink="/colony/{{colonyName}}">Back</a>
-		</div>
-		<div class="col">
-			<h3>Number of Tasks(questions) in this domain: {{getTasks().length}}</h3>
+	<div class="row">
+		<div class="col mt-2">
+			<a class="btn bg-orange" href="#" routerLink="/colony/{{colonyName}}">&lt; Back</a>
 		</div>
 	</div>
 
-	<div class="row mt-5">
+	<div class="row mt-3">
 		<div class="col">
-			<h3>Open Questions</h3>
-				<div class="container-table100">
+			<h3 class="text-center">Open Questions</h3>
+				<div class="">
 					<div class="wrap-table100">
 						<div class="table">
 							<div class="row header">
@@ -61,9 +59,9 @@
 		</div>
 
 		<div class="col">
-			<h3>Open Evaluations</h3>
+			<h3 class="text-center">Open Evaluations</h3>
 
-			<div class="container-table100">
+			<div class="">
 				<div class="wrap-table100">
 					<div class="table">
 						<div class="row header">
@@ -83,10 +81,10 @@
 								<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
 							</div>
 							<div class="cell">
-								31
+								5
 							</div>
 							<div class="cell">
-								5 days
+								2 days
 							</div>
 						</div>
 					</div>
