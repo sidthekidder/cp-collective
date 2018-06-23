@@ -9,15 +9,16 @@ import EthersAdapter from '@colony/colony-js-adapter-ethers';
 import ColonyNetworkClient from '@colony/colony-js-client';
 import { Constants} from './constants'
 import { v4 as uuid } from 'uuid';
-import * as IPFS from 'ipfs';
 import * as BN from 'bn.js';
 
 import { providers, Wallet } from 'ethers';
+import { Connect, SimpleSigner } from 'uport-connect';
+
 import { TrufflepigLoader } from '@colony/colony-js-contract-loader-http';
 import { environment } from '../environments/environment';
 
 declare const Buffer
-
+declare var Ipfs
 
 @Injectable()
 export class DataService {
@@ -36,6 +37,7 @@ export class DataService {
   adminColonyNetworkClient: any
   adminColonyClient: any
   node: any // ipfs
+  uport: any
 
   taskCount: number
   domainCount: number
@@ -60,22 +62,19 @@ export class DataService {
 
     }
     this.initLib()
+    this.uport = {}
   }
 
   initLib() {
     // don't perform network calls before initialization is finished
-    this.startLoading()
+    // this.startLoading()
 
     let that = this
     // Create an instance of the Trufflepig contract loader
     this.loader = new TrufflepigLoader();
 
     // Create a provider for local TestRPC (Ganache)
-    // if (typeof web3 !== 'undefined') {
-    //   this.provider = new providers.Web3Provider(web3.currentProvider)
-    //   this.user.wallet = this.provider.getSigner()
-    // } else {
-      this.provider = new providers.JsonRpcProvider('http://localhost:8545/')
+    this.provider = new providers.JsonRpcProvider('http://localhost:8545')
     // }
 
     // create a demo account to view ColonyNetwork data
@@ -107,9 +106,11 @@ export class DataService {
         that.adminColonyNetworkClient.init().then(() => {
           console.log('just set colonynetworkclient now')
           // connect to IPFS
-          that.initIPFS().then(() => {
-            that.endLoading()
-          })
+          that.initIPFS().then(() => { })
+          // that.endLoading()
+          console.log('ending loading now')
+          that.networkLoading = false
+          console.log(that.networkLoading)
         })
       })
     })
@@ -118,6 +119,7 @@ export class DataService {
   resetAccount() {
     this.user.wallet = {}
     this.user.loggedIn = false
+    this.uport = {}
   }
 
   async newAccount() {
@@ -160,11 +162,39 @@ export class DataService {
     this.user.loggedIn = true
   }
 
+  async uportAccount() {
+    this.startLoading()
+    let uriHandler = (uri) => {
+      window.open(uri, "_blank", "top=200,left=500,width=500,height=500")
+    }
+
+    const uport = new Connect('Competitive Programmers Colony', {
+      clientId: '2odiJDBTmZzDLVdeobGSRXo96sRKSKHjmtk',
+      network: 'rinkeby',
+      signer: SimpleSigner('1c12a3f305478d6e73de7c99e0d0bedc04a8e57abcbd89e478053e3cb4afe979'),
+      uriHandler: uriHandler
+    })
+
+    // Request credentials to login
+    let that = this
+    uport.requestCredentials({
+      requested: ['name', 'avatar'],
+      notifications: true // We want this if we want to receive credentials
+    }).then((data) => {
+      this.uport = { name: data.name, avatar: data.avatar.uri }
+
+      // hack
+      that.newAccount().then(() => {that.endLoading()})
+    }).catch((e) => {that.endLoading()})
+  }
+
   logOut() {
     // flush away user properties
     this.user = {
-      'loggedIn': false
+      'loggedIn': false,
+      'wallet': {}
     }
+    this.uport = {}
   }
 
   async connectToColony(colonyName) {
@@ -227,7 +257,7 @@ export class DataService {
       this.domains.push(obj)
     }
 
-    for(var j = 0 ; j < this.taskCount ; j++) {
+    for(var j = this.taskCount - 1 ; j >= 0 ; j--) {
       console.log('starting task ' + j)
       try {
         let task = await this.colonyClient.getTask.call({taskId: j})
@@ -239,7 +269,9 @@ export class DataService {
           this.taskCount += 1
           continue
         }
-        let taskDetails = {'title': 'Sample question', 'description': 'Difficult question about programming: http://codeforces.com/problemset/problem/990/G', 'url': 'http://codeforces.com/problemset/submission/990/39109082'}//FIXME await this.getTaskSpecification(task.specificationHash)
+        console.log("GETTING ")
+        console.log(task.specificationHash)
+        let taskDetails = await this.getTaskSpecification(task.specificationHash)
         task['details'] = taskDetails
 
         // get role open/closed details
@@ -384,9 +416,8 @@ export class DataService {
     }    
   }
 
-  // `FS helper methods
   waitForIPFS() {
-    this.node = new IPFS({ start: false })
+    this.node = new Ipfs({ start: false, repo: '/Users/sidthekid/Documents/ipfs' })
 
     let that = this
     return new Promise((resolve, reject) => {
@@ -397,6 +428,7 @@ export class DataService {
 
   async initIPFS() {
     await this.waitForIPFS()
+    console.log(this.node)
     return this.node.start()
   }
 
@@ -407,7 +439,7 @@ export class DataService {
   }
 
   async getTaskSpecification(hash) {
-    const buf = await this.node.files.cat(hash)
+    const buf = await this.node.files.cat(`/ipfs/${hash}`)
     let spec
     try {
       spec = JSON.parse(buf.toString())
@@ -433,3 +465,6 @@ export class DataService {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 }
+
+const stop = () => node.stop();
+

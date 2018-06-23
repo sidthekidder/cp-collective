@@ -107,5 +107,6 @@ module.exports = {
       "linked-lists": 2,
       "arrays": 3
     }
-  }
+  },
+  "firstInit": false
 }

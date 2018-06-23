@@ -1,9 +1,13 @@
 <div class="row mt-5" *ngIf="state == 1">
-	<div class="col-md-2 offset-md-4">
+	<div class="col-md-2 offset-md-3">
 		<button class="btn bg-orange clickme" (click)="setState(2)">Create a new account</button>
 	</div>
 	<div class="col-md-2">
 		<button class="btn bg-orange clickme" (click)="setState(3)">Use existing account</button>
+	</div>
+
+	<div class="col-md-2">
+		<button class="btn bg-orange clickme" (click)="setState(4)"><img src="/assets/images/uport.png" width="20" height="20" />&nbsp;&nbsp;uPort Connect</button>
 	</div>
 </div>
 
@@ -22,5 +26,24 @@
 		<label class="align-bottom">Enter private key here: </label>
 		<input [(ngModel)]="importPrivateKey" type="text" spellcheck="false" autocomplete="off" id="input-pk" class="form-input">
 		<button (click)="importPk()" class="btn bg-orange clickme">Import</button>
+	</div>
+</div>
+
+<div class="row mt-5" *ngIf="state == 4">
+	<div class="col text-center">
+		<button (click)="uportLogin()" class="btn bg-orange clickme"><img src="/assets/images/uport.png" width="20" height="20" />&nbsp;&nbsp;Click to Authenticate</button>
+	</div>
+
+	<div *ngIf="dataService.user.loggedIn">
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<h3>Your private key is <span style="background-color: #ffa5004d">{{dataService.user.wallet.privateKey}}</span></h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col text-center">
+				<a href="#" class="btn bg-orange" routerLink="/home">Continue</a>
+			</div>
+		</div>
 	</div>
 </div>

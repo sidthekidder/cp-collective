@@ -34,12 +34,14 @@ const example = async () => {
     wallet,
   });
 
+
   // Connect to ColonyNetwork with the adapter!
   const networkClient = new ColonyNetworkClient({ adapter });
   await networkClient.init();
 
-  await ecp.init();
+  console.log('Connected to Colony Network Client.')
 
+  await ecp.init();
 
   //////////////////////////////////////////////////////////////////
   // Deploy the ERC20 token for all Colonies
@@ -69,7 +71,6 @@ const example = async () => {
   const algoColonyClient = await networkClient.getColonyClient(algoData.eventData.colonyId)
   const algoSkillId = await algoColonyClient.getDomain.call({ domainId: 1 })
 
-console.log('a')
   // search, strings, sorting, greedy, dynamic programming
   await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
   await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
@@ -77,7 +78,6 @@ console.log('a')
   await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
   await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
   await algoColonyClient.addDomain.send({parentSkillId: algoSkillId.localSkillId})
-console.log('b')
   // use algoCount -0, -1, -2 etc respectively for above domains
   var count = await algoColonyClient.getDomainCount.call()
   let algoCount = count.count
@@ -101,7 +101,6 @@ console.log('b')
 
   specificationHash = await ecp.saveTaskSpecification({ title: 'Q6', description: 'Strings question 6.' });
   await algoColonyClient.createTask.send({ specificationHash: specificationHash, domainId: algoCount-4  });
-console.log('c')
   // update the ids in constants file
   Constants.domainNameToIdMapping['algorithms']['search'] = algoCount-5
   Constants.domainNameToIdMapping['algorithms']['strings'] = algoCount-4
@@ -109,13 +108,13 @@ console.log('c')
   Constants.domainNameToIdMapping['algorithms']['greedy'] = algoCount-2
   Constants.domainNameToIdMapping['algorithms']['dp'] = algoCount-1
   Constants.domainNameToIdMapping['algorithms']['misc'] = algoCount
-console.log('d')
+
   //////////////////////////////////////////////////////////////////
   // Initialize the Data Structures colony
   //////////////////////////////////////////////////////////////////
   const dsColonyClient = await networkClient.getColonyClient(dsData.eventData.colonyId)
   const dsSkillId = await dsColonyClient.getDomain.call({ domainId: 1 })
-console.log('e')
+
   // linked-lists, arrays, trees, stacks-queues, graphs
   await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
   await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
@@ -123,7 +122,7 @@ console.log('e')
   await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
   await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
   await dsColonyClient.addDomain.send({parentSkillId: dsSkillId.localSkillId})
-console.log('f')
+
   // use dsCount -0, -1, -2 etc respectively for above domains
   count = await dsColonyClient.getDomainCount.call()
   let dsCount = count.count
@@ -138,7 +137,7 @@ console.log('f')
 
   specificationHash = await ecp.saveTaskSpecification({ title: 'Q6', description: 'Arrays question 2.' });
   await dsColonyClient.createTask.send({ specificationHash: specificationHash, domainId: dsCount-4  });
-console.log('g')
+
   // update the ids in constants file
   Constants.domainNameToIdMapping['data-structures']['linked-lists'] = dsCount-5
   Constants.domainNameToIdMapping['data-structures']['arrays'] = dsCount-4
@@ -152,11 +151,11 @@ console.log('g')
   //////////////////////////////////////////////////////////////////
   const miscColonyClient = await networkClient.getColonyClient(miscData.eventData.colonyId)
   const miscSkillId = await miscColonyClient.getDomain.call({ domainId: 1 })
-console.log('h')
+
   // maths, sql
   await miscColonyClient.addDomain.send({parentSkillId: miscSkillId.localSkillId})
   await miscColonyClient.addDomain.send({parentSkillId: miscSkillId.localSkillId})
-console.log('i')
+
   // use miscCount -0, -1, -2 etc respectively for above domains
   count = await miscColonyClient.getDomainCount.call()
   let miscCount = count.count
@@ -168,7 +167,7 @@ console.log('i')
 
   specificationHash = await ecp.saveTaskSpecification({ title: 'Q8', description: 'Arrays question 1.' })
   await miscColonyClient.createTask.send({ specificationHash: specificationHash, domainId: miscCount  })
-console.log('j')
+
   // update the ids in constants file
   Constants.domainNameToIdMapping['misc']['linked-lists'] = miscCount-1
   Constants.domainNameToIdMapping['misc']['arrays'] = miscCount
@@ -178,10 +177,8 @@ console.log('j')
   fs.writeFileSync(__dirname + '/app/generated_constants.js', 'module.exports = ' + JSON.stringify(Constants, null, 2))
 
   // cleanup
-  await ecp.stop();
+  // await ecp.stop();
   return
-
 };
 
 module.exports = example;
-

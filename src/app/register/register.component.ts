@@ -17,12 +17,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router, public dataService: DataService) {
     this.state = 1
-    this.importPrivateKey = ''
   }
 
   ngOnInit() {
     this.loadData()
     this.state = 1
+    this.importPrivateKey = ''
     
     if (this.dataService.user.loggedIn == true) {
       this.router.navigate(['/', 'profile'])
@@ -63,5 +63,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }).catch((e) => {
       alert('Error in importing private key!')
     })
+  }
+
+  uportLogin() {
+    this.dataService.uportAccount().then((data) => { }).catch((e) => { })
   }
 }

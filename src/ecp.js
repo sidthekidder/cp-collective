@@ -7,12 +7,11 @@
 // user experience, without compromising decentralisation.
 
 const IPFS = require('ipfs');
-const { Buffer } = require('buffer');
 
 let node;
 
 const waitForIPFS = () => {
-  node = new IPFS({ start: false });
+  node = new IPFS({ start: false, repo: '/Users/sidthekid/Documents/ipfs' });
   return new Promise((resolve, reject) => {
     node.on('ready', () => resolve(true));
     node.on('error', err => reject(err));
@@ -21,6 +20,7 @@ const waitForIPFS = () => {
 
 exports.init = async () => {
   await waitForIPFS();
+  console.log(node)
   return node.start();
 }
 
