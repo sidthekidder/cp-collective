@@ -18,7 +18,7 @@
 
 <div *ngIf="state == 2">
 
-	<div class="row">
+	<div class="row mt-2">
 		<div class="col mt-2">
 			<a class="btn bg-orange" href="#" routerLink="/colony/{{colonyName}}">&lt; Back</a>
 		</div>
@@ -90,17 +90,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-
-	<div class="row mt-5">
-		<div class="col text-center">
-			<h3>Finished Questions</h3>
-			<ul class="domain-list-row" *ngFor="let task of getTasks(3)">
-				<li class="domain-list-title">
-					<a href="#" routerLink="/colony/{{colonyName}}/{{domainName}}/question//{{task.id}}">{{task.details.title}}</a>
-				</li>
-			</ul>
 		</div>
 	</div>
 </div>

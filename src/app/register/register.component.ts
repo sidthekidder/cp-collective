@@ -50,7 +50,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   importPk() {
-    // validate
+    // validate the private key
     if (this.importPrivateKey.length == 0) {
       alert("Private key can't be empty!")
       return

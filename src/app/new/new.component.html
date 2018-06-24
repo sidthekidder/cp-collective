@@ -1,0 +1,97 @@
+
+<div class="container">
+<div *ngIf="!dataService.user.loggedIn">
+	<div class="row mt-5">
+		<div class="col text-center">
+			<a href="#" class="btn bg-orange black" routerLink="/register">Log In</a>
+		</div>
+	</div>
+</div>
+
+<div *ngIf="dataService.user.loggedIn">
+	<div class="row mt-2">
+		<div class="col mt-2">
+			<a class="btn bg-orange" href="#" routerLink="/home">&lt; Back</a>
+		</div>
+	</div>
+
+	<div *ngIf="state == 1">
+		<div class="row">
+			<div class="col text-center">
+				<h2>Create New Question</h2>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col text-center">
+				<span class="input input--juro" [ngClass]="{'input--filled': task.title.length > 0}">
+					<input [(ngModel)]="task.title" class="input__field input__field--juro" type="text" id="input-tasktitle" />
+					<label class="input__label input__label--juro" for="input-tasktitle">
+						<span class="input__label-content input__label-content--juro">Question Name</span>
+					</label>
+				</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col text-center">
+				<span class="input input--juro" [ngClass]="{'input--filled': task.description.length > 0}">
+					<input [(ngModel)]="task.description" class="input__field input__field--juro" type="text" id="input-taskdesc" />
+					<label class="input__label input__label--juro" for="input-taskdesc">
+						<span class="input__label-content input__label-content--juro">Question Description</span>
+					</label>
+				</span>
+			</div>
+		</div>
+
+		<div class="row mt-2">
+			<div class="col text-center">
+				<label>Choose Colony:</label>
+				<select [(ngModel)]="task.colony" class="custom-select mr-2" name="selectColony">
+					<option *ngFor="let colony of colonies" value="{{colony}}">{{colony}}</option>
+				</select>
+			</div>
+			<div class="col text-center" *ngIf="domains[task.colony] != null">
+				<label>Choose Question Domain:</label>
+				<select [(ngModel)]="task.domain" class="custom-select mr-2" name="selectDomain">
+					<option *ngFor="let domain of domains[task.colony]" value="{{domain}}">{{domain}}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="row mt-4">
+			<div class="col text-center">
+				<button class="btn bg-orange clickme" (click)="createTask()">Submit</button>
+			</div>
+		</div>
+	</div>
+
+	<div *ngIf="state == 2">
+		<div class="row mt-1">
+			<div class="col text-center">
+				<h3>Question successfully created! </h3>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col text-center">
+				<a href="#" class="btn bg-orange" routerLink="/home">Continue</a>
+			</div>
+		</div>
+	</div>
+
+	<div *ngIf="state == 3">
+		<div class="row mt-1">
+			<div class="col text-center">
+				<h3>Error in creating question: {{task.error}}</h3>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col text-center">
+				<button class="btn bg-orange" (click)="setState(1)">Try Again</button>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

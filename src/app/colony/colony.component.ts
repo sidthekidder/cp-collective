@@ -31,6 +31,7 @@ export class ColonyComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let that = this
 
+    // get the colony and (if present) domain names from the URL
     this.subColonyName = this.route.params.subscribe(params => {
       that.colonyName = params.colony
 
@@ -49,7 +50,7 @@ export class ColonyComponent implements OnInit, OnDestroy {
   async loadColonyData() {
     let that = this
 
-    this.dataService.connectToColony(this.colonyName).then(() => {
+    this.dataService.connectToColony(this.colonyName, false).then(() => {
       return
     })
   }
@@ -60,8 +61,8 @@ export class ColonyComponent implements OnInit, OnDestroy {
 
   domainLoop() {
     var list = []
-    //HACK we loop over domainCount-1 because we don't want to count the root domain (which is already created)
-    for(var i = 0 ; i < this.dataService.domainCount-1 ; i++) list.push(i)
+    // we loop over 2 - (domainCount-1) because that's how domainId is counted, from root (1) onwards
+    for(var i = 2 ; i <= this.dataService.domainCount ; i++) list.push(i)
     return list
   }
 

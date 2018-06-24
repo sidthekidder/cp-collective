@@ -6,81 +6,65 @@ module.exports = {
   },
   "colonyToDomainMapping": {
     "algorithms": {
-      "0": {
+      "2": {
         "name": "Search",
         "slug": "search"
       },
-      "1": {
+      "3": {
         "name": "Strings",
         "slug": "strings"
       },
-      "2": {
+      "4": {
         "name": "Sorting",
         "slug": "sorting"
       },
-      "3": {
+      "5": {
         "name": "Greedy",
         "slug": "greedy"
       },
-      "4": {
+      "6": {
         "name": "Dynamic Programming",
         "slug": "dp"
       },
-      "5": {
+      "7": {
         "name": "Miscellaneous",
         "slug": "misc"
       }
     },
     "data-structures": {
-      "0": {
+      "2": {
         "name": "Linked Lists",
         "slug": "linked-lists"
       },
-      "1": {
+      "3": {
         "name": "Arrays",
         "slug": "arrays"
       },
-      "2": {
+      "4": {
         "name": "Stacks/Queues",
         "slug": "stacks-queues"
       },
-      "3": {
+      "5": {
         "name": "Trees",
         "slug": "trees"
       },
-      "4": {
+      "6": {
         "name": "Hash/Maps",
         "slug": "hash-maps"
       },
-      "5": {
+      "7": {
         "name": "Graphs",
         "slug": "graphs"
       }
     },
     "misc": {
-      "0": {
-        "name": "Linked Lists",
-        "slug": "linked-lists"
-      },
-      "1": {
-        "name": "Arrays",
-        "slug": "arrays"
-      },
       "2": {
-        "name": "Stacks/Queues",
-        "slug": "stacks-queues"
+        "name": "Maths",
+        "slug": "maths"
       },
       "3": {
-        "name": "Trees",
-        "slug": "trees"
-      },
-      "4": {
-        "name": "Hash/Maps",
-        "slug": "hash-maps"
-      },
-      "5": {
-        "name": "Graphs",
-        "slug": "graphs"
+        "name": "SQL",
+        "slug": "sql"
       }
     }
   },
@@ -102,11 +86,8 @@ module.exports = {
       "graphs": 7
     },
     "misc": {
-      "maths": 0,
-      "SQL": 1,
-      "linked-lists": 2,
-      "arrays": 3
+      "maths": 2,
+      "sql": 3
     }
-  },
-  "firstInit": false
+  }
 }

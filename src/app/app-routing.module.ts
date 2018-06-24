@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { ColonyComponent } from './colony/colony.component';
 import { QuestionComponent } from './question/question.component';
 import { ProfileComponent } from './profile/profile.component';
+import { NewComponent } from './new/new.component';
 import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'colony/:colony/:domain', component: ColonyComponent },
   { path: 'colony/:colony/:domain/question/:qid', component: QuestionComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'new', component: NewComponent },
   { path: 'profile', component: ProfileComponent }
 ];
 

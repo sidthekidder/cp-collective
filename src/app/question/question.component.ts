@@ -1,14 +1,3 @@
-// Copyright (c) 2018 Zilliqa 
-// This source code is being disclosed to you solely for the purpose of your participation in 
-// testing Zilliqa. You may view, compile and run the code for that purpose and pursuant to 
-// the protocols and algorithms that are programmed into, and intended by, the code. You may 
-// not do anything else with the code without express permission from Zilliqa Research Pte. Ltd., 
-// including modifying or publishing the code (or any part of it), and developing or forming 
-// another public or private blockchain network. This source code is provided ‘as is’ and no 
-// warranties are given as to title or non-infringement, merchantability or fitness for purpose 
-// and, to the extent permitted by law, all liability for your use of the code is disclaimed. 
-
-
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -43,6 +32,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     let that = this
 
+    // get the colony name, domain name, and task id from the URL
     this.subColony = this.route.params.subscribe(params => {
       that.colonyName = params.colony
     })
@@ -59,7 +49,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   loadData() {
     let that = this
 
-    this.dataService.connectToColony(this.colonyName).then(() => {
+    this.dataService.connectToColony(this.colonyName, false).then(() => {
       // get the task with id == qid
       for(var i = 0 ; i < that.dataService.tasks.length ; i++) {
         if (that.dataService.tasks[i].id == that.qid) {
@@ -107,6 +97,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   applySolveConfirm() {
+    // call the setTaskRole API
     let that = this
 
     this.dataService.assignTask(this.task.id).then((data) => {
@@ -116,13 +107,14 @@ export class QuestionComponent implements OnInit, OnDestroy {
       } else {
         that.modal.apply.solveSuccess = true
 
-        // temporary fix for UI
+        // fix UI to prevent reload
         that.task.worker = that.dataService.user.wallet.address
       }
     })
   }
 
   applyEvaluationConfirm() {
+    // call the setTaskRole API
     let that = this
 
     this.dataService.assignEvaluate(this.task.id).then((data) => {
@@ -132,7 +124,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
       } else {
         that.modal.apply.evaluateSuccess = true
 
-        // temporary fix for UI
+        // fix UI to prevent reload
         that.task.evaluator = that.dataService.user.wallet.address
       }
     })
@@ -149,22 +141,26 @@ export class QuestionComponent implements OnInit, OnDestroy {
   }
 
   submitQuestionConfirm() {
-    console.log('1. confirmed')
+    // call the submitTaskDeliverable API
     let that = this
 
     this.dataService.submitTask(this.task.id, this.submit.rating.url).then((data) => {
       that.resetModal()
+
+      that.dataService.networkLoading = false
       if (data.success != true) {
         that.modal.submit.error = true
       } else {
         that.modal.submit.solveSuccess = true
 
-        // temporary fix for UI
-        that.task.finalized = true
+        // temp fix for UI to prevent reload
+        that.finalizeTask(that.task.id)
       }
     }).catch((e) => {
       console.log('Error!')
       console.log(e)
+      that.dataService.networkLoading = false
+
       that.modal.submit.error = true
     })
   }
@@ -174,14 +170,30 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
     this.dataService.submitEvaluation(this.task.id, this.submit.rating.evaluate).then((data) => {
       that.resetModal()
+      that.dataService.networkLoading = false
       if (data.success != true) {
         that.modal.submit.error = true
       } else {
         that.modal.submit.evaluateSuccess = true
 
-        // temporary fix for UI
-        that.task.finalized = true
+        // prevent UI reload
+        that.finalizeTask(that.task.id)
       }
+    }).catch((e) => {
+      console.log('Error!')
+      console.log(e)
+      that.dataService.networkLoading = false
+
+      // temp hack till the submitTaskRating API works
+      // that.modal.submit.error = true
+      that.modal.submit.solveSuccess = true
+      that.finalizeTask(that.task.id)
     })
+  }
+
+  finalizeTask(tid) {
+    let i = this.dataService.tasks.findIndex(item => item.id === tid)
+    if (i == -1) return
+    this.dataService.tasks[i].finalized = true  
   }
 }

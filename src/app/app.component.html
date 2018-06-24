@@ -17,10 +17,13 @@
 			</li>
 
 			<li class="" *ngIf="dataService.user.loggedIn">
-				<a href="#" class="btn info-btn btn-cp" routerLink="profile">Your Tasks</a>
+				<a href="#" class="btn info-btn btn-cp mr-2" routerLink="new">New Question</a>
 			</li>
 			<li class="" *ngIf="dataService.user.loggedIn">
-				<button class="btn info-btn btn-cp" (click)="logOut()">Log Out</button>
+				<a href="#" class="btn info-btn btn-cp mr-2" routerLink="profile">Your Questions</a>
+			</li>
+			<li class="" *ngIf="dataService.user.loggedIn">
+				<button class="btn info-btn btn-cp mr-2 clickme" (click)="logOut()">Log Out</button>
 			</li>
 			<li class="" *ngIf="!dataService.user.loggedIn">
 				<a href="#" class="btn info-btn btn-cp" routerLink="register">Log In</a>

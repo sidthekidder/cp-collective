@@ -38,8 +38,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // loop over all tasks in the colony
     for(var i = 0 ; i < this.dataService.tasks.length ; i++) {
       let task = this.dataService.tasks[i]
-      // task with worker as user's own address
-      if(task.worker == this.dataService.user.wallet.address) list.push(task)
+      // select the task if task.worker is user's own address
+      if (task.worker == this.dataService.user.wallet.address) list.push(task)
     }
 
     return list
@@ -51,8 +51,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // loop over all tasks in the colony
     for(var i = 0 ; i < this.dataService.tasks.length ; i++) {
       let task = this.dataService.tasks[i]
-      // task with evaluator as user's own address
-      if(task.evaluator == this.dataService.user.wallet.address) list.push(task)
+      // select the task if task.evaluator is user's own address
+      if (task.evaluator == this.dataService.user.wallet.address) list.push(task)
     }
 
     return list

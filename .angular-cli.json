@@ -9,7 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "zilfavicon.ico",
+        "favicon.ico",
         "app/generated_constants.js",
         "ecp.js"
       ],
