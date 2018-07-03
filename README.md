@@ -1,4 +1,5 @@
-# Competitive Programmers Collective - Runner-Up in ColonyJS Hackathon
+# Competitive Programmers Collective
+## Runner-Up in the [ColonyJS Hackathon](https://twitter.com/joincolony/status/1012802889335689217)
 
 Competitive Programmers Collective is a Colony that aims to bring together and help programmers grow their problem-solving skills and ranking, and keep track of reputation across the internet. It is a decentralized community made up of programmers and learners just like you.
 
