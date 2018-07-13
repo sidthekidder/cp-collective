@@ -12,7 +12,6 @@ import { v4 as uuid } from 'uuid';
 import * as BN from 'bn.js';
 
 import { providers, Wallet } from 'ethers';
-import { Connect, SimpleSigner } from 'uport-connect';
 
 import { TrufflepigLoader } from '@colony/colony-js-contract-loader-http';
 import { environment } from '../environments/environment';
@@ -43,8 +42,6 @@ export class DataService {
   adminColonyClient: any
   // stores the ipfs node
   node: any
-  // stores the uport connect account
-  uport: any
 
   // number of domains = last created domainId in that colony
   domainCount: number
@@ -70,7 +67,7 @@ export class DataService {
       'loggedIn': false
     }
     this.admin = { }
-    this.uport = {}
+
 
     this.initLib()
   }
@@ -124,7 +121,6 @@ export class DataService {
     // flush the logged in users
     this.user.wallet = {}
     this.user.loggedIn = false
-    this.uport = {}
   }
 
   async newAccount() {
@@ -167,34 +163,6 @@ export class DataService {
     this.user.loggedIn = true
   }
 
-  async uportAccount() {
-    this.startLoading()
-
-    // setup the callback to open in a new window
-    let uriHandler = (uri) => {
-      window.open(uri, "_blank", "top=200,left=500,width=500,height=500")
-    }
-
-    // initialize uport connect with 'Competitive Programmers Colony' app credentials
-    const uport = new Connect('Competitive Programmers Colony', {
-      clientId: '2odiJDBTmZzDLVdeobGSRXo96sRKSKHjmtk',
-      network: 'rinkeby',
-      signer: SimpleSigner('1c12a3f305478d6e73de7c99e0d0bedc04a8e57abcbd89e478053e3cb4afe979'),
-      uriHandler: uriHandler
-    })
-
-    // request credentials to login
-    let that = this
-    uport.requestCredentials({
-      requested: ['name', 'avatar'],
-      notifications: true
-    }).then((data) => {
-      this.uport = { name: data.name, avatar: data.avatar.uri }
-
-      // generate a private key linked with this account
-      that.newAccount().then(() => {that.endLoading()})
-    }).catch((e) => {that.endLoading()})
-  }
 
   logOut() {
     // flush away user properties
@@ -202,7 +170,6 @@ export class DataService {
       'loggedIn': false,
       'wallet': {}
     }
-    this.uport = {}
   }
 
   async connectToColony(colonyName, forceConnect) {
