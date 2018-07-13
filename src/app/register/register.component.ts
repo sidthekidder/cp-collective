@@ -64,8 +64,4 @@ export class RegisterComponent implements OnInit, OnDestroy {
       alert('Error in importing private key!')
     })
   }
-
-  uportLogin() {
-    this.dataService.uportAccount().then((data) => { }).catch((e) => { })
-  }
 }
