@@ -9,13 +9,6 @@
 		</a>
 
 		<ul class="navbar-nav">
-			<li class="" *ngIf="dataService.uport.name != null">
-				<label class="btn btn-cp">{{dataService.uport.name}}</label>
-			</li>
-			<li style="position: relative; top -5px;" *ngIf="dataService.uport.avatar != null">
-				<img style="border-radius: 20px;" src="{{dataService.uport.avatar}}" height="50" width="50" />
-			</li>
-
 			<li class="" *ngIf="dataService.user.loggedIn">
 				<a href="#" class="btn info-btn btn-cp mr-2" routerLink="new">New Question</a>
 			</li>
