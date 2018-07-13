@@ -5,10 +5,6 @@
 	<div class="col-md-2">
 		<button class="btn bg-orange clickme" (click)="setState(3)">Use existing account</button>
 	</div>
-
-	<div class="col-md-2">
-		<button class="btn bg-orange clickme" (click)="setState(4)"><img src="/assets/images/uport.png" width="20" height="20" />&nbsp;&nbsp;uPort Connect</button>
-	</div>
 </div>
 
 <div class="row mt-5" *ngIf="state == 2">
@@ -30,10 +26,6 @@
 </div>
 
 <div class="row mt-5" *ngIf="state == 4">
-	<div class="col text-center">
-		<button (click)="uportLogin()" class="btn bg-orange clickme"><img src="/assets/images/uport.png" width="20" height="20" />&nbsp;&nbsp;Click to Authenticate</button>
-	</div>
-
 	<div *ngIf="dataService.user.loggedIn">
 		<div class="row">
 			<div class="col-md-12 text-center">
